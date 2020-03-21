@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2019 the original author or authors.
+ *    Copyright 2006-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -186,7 +186,7 @@ public class XmlFileMergerJaxp {
         Element element = (Element) node;
         String id = element.getAttribute("id"); //$NON-NLS-1$
         if (id != null) {
-            return MergeConstants.idStartsWithPrefix(id);
+            return MergeConstants.idStartsWithPrefix(id) || MergeConstants.OLD_XML_ELEMENT_IDS.contains(id);
         }
         
         return false;

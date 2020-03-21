@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2019 the original author or authors.
+ *    Copyright 2006-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -51,20 +51,26 @@ public class BaseRecordGenerator extends AbstractJavaGenerator {
                 "Progress.8", table.toString())); //$NON-NLS-1$
         Plugin plugins = context.getPlugins();
         CommentGenerator commentGenerator = context.getCommentGenerator();
+        String lombokConfig = context.getJavaModelGeneratorConfiguration().getProperty("useLombok");
+        boolean useLombok = Boolean.parseBoolean(lombokConfig);
 
         FullyQualifiedJavaType type = new FullyQualifiedJavaType(
                 introspectedTable.getBaseRecordType());
         TopLevelClass topLevelClass = new TopLevelClass(type);
         topLevelClass.setVisibility(JavaVisibility.PUBLIC);
         commentGenerator.addJavaFileComment(topLevelClass);
-
         FullyQualifiedJavaType superClass = getSuperClass();
         if (superClass != null) {
             topLevelClass.setSuperClass(superClass);
             topLevelClass.addImportedType(superClass);
         }
         commentGenerator.addModelClassComment(topLevelClass, introspectedTable);
-
+        if(useLombok){
+            topLevelClass.addAnnotation("@Setter");
+            topLevelClass.addAnnotation("@Getter");
+            topLevelClass.addImportedType("lombok.Setter");
+            topLevelClass.addImportedType("lombok.Getter");
+        }
         List<IntrospectedColumn> introspectedColumns = getColumnsInThisClass();
 
         if (introspectedTable.isConstructorBased()) {
@@ -94,6 +100,9 @@ public class BaseRecordGenerator extends AbstractJavaGenerator {
                 topLevelClass.addImportedType(field.getType());
             }
 
+            if(useLombok){
+                continue;
+            }
             Method method = getJavaBeansGetter(introspectedColumn, context, introspectedTable);
             if (plugins.modelGetterMethodGenerated(method, topLevelClass,
                     introspectedColumn, introspectedTable,
