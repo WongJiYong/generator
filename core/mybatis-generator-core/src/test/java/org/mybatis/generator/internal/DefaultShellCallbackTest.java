@@ -79,7 +79,7 @@ public class DefaultShellCallbackTest {
             "\n" +
             "}\n";
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void mergeJavaFile() {
         DefaultShellCallback shellCallback = new DefaultShellCallback(false);
         URL resource = getClass().getClassLoader().getResource("mergeFile/Test.java");
